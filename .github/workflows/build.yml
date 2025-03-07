@@ -132,14 +132,6 @@ jobs:
           name: CoreProtect Artifacts
           path: ./main-coreprotect/target/*.jar  # 确保这个路径是正确的
 
-      # Auto Release
-      - name: Auto Release
-        uses: marvinpinto/action-automatic-releases@latest  # 使用最新稳定版本
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          automatic_release_tag: ${{ env.TAG_NAME }}
-          prerelease: false
-          files: ./external-coreprotect/target/*.jar
       - name: Auto Release
         uses: marvinpinto/action-automatic-releases@latest  # 使用最新稳定版本
         with:
