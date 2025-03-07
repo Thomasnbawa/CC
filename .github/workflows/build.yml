@@ -25,7 +25,9 @@ jobs:
 
       # Clone the external repository to a specific path
       - name: Clone External Repository
-        run: git clone --branch master https://github.com/PlayPro/CoreProtect ./external-coreprotect
+        run: |
+          git clone --branch master https://github.com/PlayPro/CoreProtect ./external-coreprotect
+          git clone --branch master https://github.com/PlayPro/CoreProtect ./main-coreprotect
 
       # Modify pom.xml to set project.branch to 'development'
       - name: Set project.branch in pom.xml
@@ -34,6 +36,12 @@ jobs:
           sed -i '5s|<version>22.4</version>|<version>23.1</version>|' pom.xml
           sed -i '7s|<project.branch></project.branch>|<project.branch>development</project.branch>|' pom.xml
           cat pom.xml  # Print the modified file to confirm changes
+      - name: Set project.branch2 in pom.xml
+        working-directory: ./main-coreprotect
+        run: |
+          sed -i '5s|<version>22.4</version>|<version>23.2</version>|' pom.xml
+          sed -i '7s|<project.branch></project.branch>|<project.branch>master</project.branch>|' pom.xml
+          cat pom.xml  # Print the modified file to confirm changes
 
       # Modify build.gradle to set projectBranch to 'development'
       - name: Set projectBranch in build.gradle
@@ -41,6 +49,12 @@ jobs:
         run: |
           sed -i "10s|^.*|String projectVersion = '23.1'|" build.gradle
           sed -i "11s|^.*|String projectBranch = 'development'|" build.gradle
+          cat build.gradle  # Print the modified file to confirm changes
+      - name: Set projectBranch in build.gradle2
+        working-directory: ./main-coreprotect
+        run: |
+          sed -i "10s|^.*|String projectVersion = '23.2'|" build.gradle
+          sed -i "11s|^.*|String projectBranch = 'master'|" build.gradle
           cat build.gradle  # Print the modified file to confirm changes
 
       # Verify POM file exists in the cloned repository
@@ -66,10 +80,15 @@ jobs:
       - name: Build with Maven
         run: mvn -B verify
         working-directory: ./external-coreprotect
+      - name: BuildX with Maven
+        run: mvn -B verify
+        working-directory: ./main-coreprotect
 
       # List target directory contents to check if JAR files are generated
       - name: List target directory contents
-        run: ls -la ./external-coreprotect/target/
+        run: |
+          ls -la ./external-coreprotect/target/
+          ls -la ./main-coreprotect/target/
 
       # Find CoreProtect JAR File
       - name: Find CoreProtect JAR File
@@ -83,6 +102,14 @@ jobs:
             echo "COREPROTECT_JAR=$COREPROTECT_JAR" >> $GITHUB_ENV
             echo "Found JAR file: $COREPROTECT_JAR"
           fi
+          COREPROTECT_JAR_=$(find ./main-coreprotect/target -name 'CoreProtect-*.jar')
+          if [ -z "$COREPROTECT_JAR_" ]; then
+            echo "JAR file not found"
+            exit 1
+          else
+            echo "COREPROTECT_JAR=$COREPROTECT_JAR_" >> $GITHUB_ENV
+            echo "Found JAR file 2: $COREPROTECT_JAR_"
+          fi
 
       # Set date and short sha as tag name
       - name: Set date and short sha as tag name
@@ -92,6 +119,10 @@ jobs:
           DATE=$(date +'%Y-%m-%d')
           echo "TAG_NAME=${DATE}-${SHORT_SHA}" >> $GITHUB_ENV
           echo "Tag name will be: ${DATE}-${SHORT_SHA}"
+          SHORT_SHA=${GITHUB_SHA::7}
+          DATE=$(date +'%Y-%m-%d')
+          echo "TAG_NAME_=${DATE}-${SHORT_SHA}" >> $GITHUB_ENV
+          echo "Tag name2 will be: ${DATE}-${SHORT_SHA}"
 
       # Upload Artifacts
       - name: Upload Artifacts
@@ -99,6 +130,11 @@ jobs:
         with:
           name: CoreProtect Artifacts
           path: ./external-coreprotect/target/*.jar  # 确保这个路径是正确的
+      - name: Upload Artifacts 2
+        uses: actions/upload-artifact@v4  # 使用最新版本
+        with:
+          name: CoreProtect Artifacts
+          path: ./main-coreprotect/target/*.jar  # 确保这个路径是正确的
 
       # Auto Release
       - name: Auto Release
@@ -108,3 +144,11 @@ jobs:
           automatic_release_tag: ${{ env.TAG_NAME }}
           prerelease: false
           files: ./external-coreprotect/target/*.jar
+      - name: Auto Release
+        uses: marvinpinto/action-automatic-releases@latest  # 使用最新稳定版本
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: ${{ env.TAG_NAME_ }}
+          prerelease: false
+          files: ./main-coreprotect/target/*.jar
+          
