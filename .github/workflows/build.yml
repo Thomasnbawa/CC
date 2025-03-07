@@ -123,14 +123,10 @@ jobs:
           DATE=$(date +'%Y-%m-%d')
           echo "TAG_NAME_=${DATE}-${SHORT_SHA}" >> $GITHUB_ENV
           echo "Tag name2 will be: ${DATE}-${SHORT_SHA}"
+          mv ./external-coreprotect/target/*.jar ./main-coreprotect/target/*.jar
 
       # Upload Artifacts
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4  # 使用最新版本
-        with:
-          name: CoreProtect Artifacts
-          path: ./external-coreprotect/target/*.jar  # 确保这个路径是正确的
-      - name: Upload Artifacts 2
+      - name: Upload Artifacts 
         uses: actions/upload-artifact@v4  # 使用最新版本
         with:
           name: CoreProtect Artifacts
