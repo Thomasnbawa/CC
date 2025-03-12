@@ -89,22 +89,24 @@ jobs:
       # 构建后的验证步骤（精确检查两个文件）
       - name: Verify Artifacts
         run: |
+          mv ./external-coreprotect-main/target/*.jar ./external-coreprotect/target/
           ls -la ./external-coreprotect/target/
           
           # 检查核心文件是否存在
+          
           if [ ! -f ./external-coreprotect/target/CoreProtect-23.0.jar ]; then
             echo "::error::CoreProtect-23.0.jar not found"
             exit 1
           fi
 
           # 检查原始文件是否存在
-          if [ ! -f ./external-coreprotect/target/original-CoreProtect-23.0.jar ]; then
-            echo "::error::original-CoreProtect-23.0.jar not found"
+          if [ ! -f ./external-coreprotect/target/CoreProtect-23.1.jar ]; then
+            echo "::error::CoreProtect-23.1.jar not found"
             exit 1
           fi
 
           echo "Both required JAR files exist"
-          mv ./external-coreprotect-main/target/*.jar ./external-coreprotect/target/
+          
 
       # 发布两个文件
       - name: Auto Release
