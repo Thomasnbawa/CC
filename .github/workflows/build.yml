@@ -56,8 +56,8 @@ jobs:
         uses: actions/cache@v4  # 升级到 v4
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('external-coreprotect/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2-
+          key: ${{ runner.os }}-m20-${{ hashFiles('external-coreprotect/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m0-
 
       # Maven 构建（使用上游相同的构建命令）
       - name: Build with Maven
@@ -69,8 +69,8 @@ jobs:
         uses: actions/cache@v4  # 升级到 v4
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('external-coreprotect-main/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2-
+          key: ${{ runner.os }}-m21-${{ hashFiles('external-coreprotect-main/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m21-
 
       # Maven 构建（使用上游相同的构建命令）
       - name: Build with Maven
