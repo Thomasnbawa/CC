@@ -32,7 +32,7 @@ jobs:
         working-directory: ./external-coreprotect
         run: |
           # 修改版本号和分支参数
-          sed -i '5s|<version>22.4</version>|<version>23.1</version>|' pom.xml
+          sed -i '5s|<version>22.4</version>|<version>23.0</version>|' pom.xml
           sed -i '7s|<project.branch></project.branch>|<project.branch>development</project.branch>|' pom.xml
           cat pom.xml  # 验证修改
       # 修改上游的 pom.xml
@@ -40,7 +40,7 @@ jobs:
         working-directory: ./external-coreprotect-main
         run: |
           # 修改版本号和分支参数
-          sed -i '5s|<version>22.4</version>|<version>23.0</version>|' pom.xml
+          sed -i '5s|<version>22.4</version>|<version>23.1</version>|' pom.xml
           sed -i '7s|<project.branch></project.branch>|<project.branch>master</project.branch>|' pom.xml
           cat pom.xml  # 验证修改
 
